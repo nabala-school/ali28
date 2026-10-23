@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>تثبيت أسماء المدرسين</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:light;
+  --indigo:#2a2d7c; --indigo-d:#1b1d57; --gold:#c9a227; --gold-l:#e6c65c;
+  --bg:#f3f2fa; --surface:#ffffff; --text:#1d1e3d; --muted:#5f6186; --line:#d9d8ec;
+  --chip:#f6f5fc; --on-gold:#1b1d57; --ok:#1f7a4d; --err:#b3261e;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --indigo:#8a8de6; --indigo-d:#15173f; --gold:#e0bb45; --gold-l:#f0d67e;
+    --bg:#0f1030; --surface:#1a1c4a; --text:#eeeefb; --muted:#aeb0d9; --line:#33367a;
+    --chip:#22255c; --on-gold:#15173f; --ok:#6fd3a0; --err:#ff9a92;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --indigo:#8a8de6; --indigo-d:#15173f; --gold:#e0bb45; --gold-l:#f0d67e;
+  --bg:#0f1030; --surface:#1a1c4a; --text:#eeeefb; --muted:#aeb0d9; --line:#33367a;
+  --chip:#22255c; --on-gold:#15173f; --ok:#6fd3a0; --err:#ff9a92;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Cairo","Segoe UI",Tahoma,Arial,sans-serif;line-height:1.7}
+.wrap{max-width:760px;margin:0 auto;padding:16px 14px 40px}
+header{background:linear-gradient(135deg,#2a2d7c,#1b1d57);color:#fff;border-radius:18px;padding:26px 20px 22px;text-align:center;border-bottom:5px solid var(--gold);position:relative;overflow:hidden}
+header::before{content:"";position:absolute;inset:10px;border:1px solid rgba(230,198,92,.45);border-radius:12px;pointer-events:none}
+header h1{margin:0;font-size:clamp(1.5rem,5.5vw,2.1rem);font-weight:800;color:var(--gold-l)}
+header p{margin:6px 0 0;color:#d6d7f5;font-size:.95rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:16px}
+.card>h2{margin:0 0 4px;font-size:1.1rem;color:var(--indigo);border-right:4px solid var(--gold);padding-right:10px}
+.hint{margin:0 0 12px;color:var(--muted);font-size:.88rem}
+label.f{display:block;font-weight:600;margin-bottom:6px}
+input[type=text]{width:100%;padding:12px 14px;font:inherit;color:var(--text);background:var(--chip);border:1.5px solid var(--line);border-radius:10px}
+input[type=text]:focus,button:focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-color:var(--gold)}
+.grades{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.grade{font:inherit;font-weight:700;padding:14px 8px;border-radius:12px;border:1.5px solid var(--line);background:var(--chip);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.grade[aria-pressed=true]{background:var(--indigo-d);color:var(--gold-l);border-color:var(--gold)}
+.grade .tick{width:20px;height:20px;border-radius:50%;border:2px solid var(--muted);display:inline-flex;align-items:center;justify-content:center;font-size:.8rem}
+.grade[aria-pressed=true] .tick{background:var(--gold);border-color:var(--gold);color:var(--on-gold)}
+.panel{border:1.5px solid var(--gold);border-radius:14px;margin-top:14px;overflow:hidden;background:var(--surface)}
+.panel-h{background:var(--indigo-d);color:var(--gold-l);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;font-weight:700}
+.badge{background:var(--gold);color:var(--on-gold);border-radius:999px;padding:0 10px;font-size:.8rem;font-weight:700}
+.panel-b{padding:14px}
+.panel-b h3{margin:0 0 8px;font-size:.98rem;color:var(--indigo)}
+.panel-b h3+.chips{margin-bottom:16px}
+.chips{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.chip{font:inherit;font-weight:700;font-size:1.05rem;padding:10px 0;border-radius:10px;border:1.5px solid var(--line);background:var(--chip);color:var(--text);cursor:pointer}
+.chip[aria-pressed=true]{background:var(--gold);border-color:var(--gold);color:var(--on-gold)}
+.chip.sup[aria-pressed=true]{background:var(--indigo-d);border-color:var(--indigo-d);color:var(--gold-l)}
+.chip.none{grid-column:span 2;font-size:.9rem}
+.sum{list-style:none;margin:0;padding:0}
+.sum li{display:flex;flex-wrap:wrap;gap:6px 12px;padding:10px 0;border-bottom:1px dashed var(--line)}
+.sum li:last-child{border:0}
+.sum b{color:var(--indigo);min-width:110px}
+.tag{background:var(--chip);border:1px solid var(--line);border-radius:8px;padding:0 8px;font-weight:700}
+.tag.s{background:var(--indigo-d);color:var(--gold-l);border-color:var(--indigo-d)}
+.empty{color:var(--muted);text-align:center;padding:8px 0}
+.btn{font:inherit;font-weight:800;font-size:1.05rem;width:100%;margin-top:18px;padding:14px;border:0;border-radius:12px;background:linear-gradient(135deg,var(--gold-l),var(--gold));color:var(--on-gold);cursor:pointer;border-bottom:3px solid rgba(0,0,0,.2)}
+.btn.sec{background:var(--chip);color:var(--text);border:1.5px solid var(--gold);margin-top:10px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.msg{margin-top:12px;padding:10px 14px;border-radius:10px;font-weight:600;display:none}
+.msg.err{display:block;background:rgba(179,38,30,.1);color:var(--err);border:1px solid var(--err)}
+.done{display:none}
+.done.show{display:block}
+.ok-h{color:var(--ok);font-weight:800;font-size:1.15rem;margin:0 0 8px}
+@media print{body{background:#fff}.no-print{display:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>تثبيت أسماء المدرسين</h1>
+  <p>املأ البيانات بدقة: الاسم، الصفوف، الشعب والمشرف الصفي</p>
+</header>
+
+<div id="formArea">
+  <div class="card">
+    <h2>البيانات الشخصية</h2>
+    <p class="hint">اكتب الاسم الثلاثي كاملاً.</p>
+    <label class="f" for="name">اسم المدرس الثلاثي</label>
+    <input type="text" id="name" autocomplete="name" placeholder="مثال: أحمد محمد علي">
+  </div>
+
+  <div class="card">
+    <h2>الصفوف</h2>
+    <p class="hint">يمكنك اختيار أكثر من صف. عند اختيار صف تظهر شعبه أدناه.</p>
+    <div class="grades" id="grades"></div>
+    <div id="panels"></div>
+  </div>
+
+  <div class="card">
+    <h2>ملخص الاختيارات</h2>
+    <ul class="sum" id="sum"></ul>
+  </div>
+
+  <div class="msg" id="msg" role="alert"></div>
+  <button class="btn" id="submit" type="button">تثبيت البيانات</button>
+</div>
+
+<div class="card done" id="done">
+  <p class="ok-h">تم تثبيت البيانات</p>
+  <ul class="sum" id="doneSum"></ul>
+  <div class="row no-print">
+    <button class="btn sec" id="copy" type="button">نسخ النص</button>
+    <button class="btn sec" id="print" type="button">طباعة</button>
+  </div>
+  <button class="btn no-print" id="again" type="button">إضافة مدرس آخر</button>
+</div>
+</div>
+
+<script>
+const GRADES=["الأول متوسط","الرابع الإعدادي","الخامس الإعدادي","السادس الإعدادي"];
+const SECS=["أ","ب","ج","د","هـ","و","ز","ح"];
+let state={};
+const $=id=>document.getElementById(id);
+const gradesEl=$("grades"),panelsEl=$("panels");
+
+function gradeButtons(){
+  gradesEl.innerHTML="";
+  GRADES.forEach(g=>{
+    const b=document.createElement("button");
+    b.type="button";b.className="grade";
+    b.setAttribute("aria-pressed",!!state[g]);
+    b.innerHTML='<span class="tick">'+(state[g]?"✓":"")+"</span>"+g;
+    b.onclick=()=>{
+      if(state[g]) delete state[g]; else state[g]={secs:[],sup:null};
+      render();
+    };
+    gradesEl.appendChild(b);
+  });
+}
+function chip(label,pressed,cls,fn){
+  const c=document.createElement("button");
+  c.type="button";c.className="chip "+(cls||"");c.textContent=label;
+  c.setAttribute("aria-pressed",pressed);c.onclick=fn;return c;
+}
+function panels(){
+  panelsEl.innerHTML="";
+  GRADES.filter(g=>state[g]).forEach(g=>{
+    const st=state[g];
+    const p=document.createElement("div");p.className="panel";
+    p.innerHTML='<div class="panel-h"><span>'+g+'</span><span class="badge">'+st.secs.length+' شعب</span></div>';
+    const b=document.createElement("div");b.className="panel-b";
+    b.innerHTML="<h3>الشعب التي يدرّسها</h3>";
+    const c1=document.createElement("div");c1.className="chips";
+    SECS.forEach(s=>c1.appendChild(chip(s,st.secs.includes(s),"",()=>{
+      st.secs=st.secs.includes(s)?st.secs.filter(x=>x!==s):SECS.filter(x=>x===s||st.secs.includes(x));
+      render();
+    })));
+    b.appendChild(c1);
+    const h=document.createElement("h3");h.textContent="المشرف الصفي على شعبة";b.appendChild(h);
+    const c2=document.createElement("div");c2.className="chips";
+    SECS.forEach(s=>c2.appendChild(chip(s,st.sup===s,"sup",()=>{st.sup=st.sup===s?null:s;render();})));
+    c2.appendChild(chip("غير مشرف",st.sup===null,"none",()=>{st.sup=null;render();}));
+    b.appendChild(c2);
+    p.appendChild(b);panelsEl.appendChild(p);
+  });
+}
+function summaryHTML(){
+  const gs=GRADES.filter(g=>state[g]);
+  if(!gs.length) return '<li class="empty">لم يتم اختيار أي صف بعد.</li>';
+  return gs.map(g=>{
+    const st=state[g];
+    const secs=st.secs.length?st.secs.map(s=>'<span class="tag">'+s+"</span>").join(" "):'<span class="empty">لم تُحدد شعب</span>';
+    const sup=st.sup?'<span class="tag s">'+st.sup+"</span>":"لا يوجد";
+    return "<li><b>"+g+"</b><span>الشعب: "+secs+"</span><span>المشرف الصفي: "+sup+"</span></li>";
+  }).join("");
+}
+function render(){gradeButtons();panels();$("sum").innerHTML=summaryHTML();}
+
+function showErr(t){const m=$("msg");m.textContent=t;m.className="msg err";m.scrollIntoView({block:"center",behavior:"smooth"});}
+function textOut(){
+  let t="تثبيت أسماء المدرسين\nالاسم: "+$("name").value.trim()+"\n";
+  GRADES.filter(g=>state[g]).forEach(g=>{
+    t+="\n"+g+"\nالشعب: "+state[g].secs.join("، ")+"\nالمشرف الصفي: "+(state[g].sup||"لا يوجد")+"\n";
+  });
+  return t;
+}
+$("submit").onclick=()=>{
+  const name=$("name").value.trim();
+  $("msg").className="msg";
+  if(name.split(/\s+/).filter(Boolean).length<3) return showErr("اكتب الاسم الثلاثي كاملاً (ثلاث كلمات على الأقل).");
+  const gs=GRADES.filter(g=>state[g]);
+  if(!gs.length) return showErr("اختر صفاً واحداً على الأقل.");
+  const miss=gs.find(g=>!state[g].secs.length);
+  if(miss) return showErr("اختر شعبة واحدة على الأقل في: "+miss);
+  $("doneSum").innerHTML='<li><b>الاسم</b><span>'+name.replace(/</g,"&lt;")+"</span></li>"+summaryHTML();
+  $("formArea").style.display="none";$("done").classList.add("show");
+  window.scrollTo({top:0,behavior:"smooth"});
+};
+$("copy").onclick=async()=>{
+  try{await navigator.clipboard.writeText(textOut());$("copy").textContent="تم النسخ";}
+  catch(e){$("copy").textContent="تعذّر النسخ";}
+};
+$("print").onclick=()=>window.print();
+$("again").onclick=()=>{
+  state={};$("name").value="";$("copy").textContent="نسخ النص";
+  $("done").classList.remove("show");$("formArea").style.display="";render();
+};
+render();
+</script>
+</body>
+</html>
